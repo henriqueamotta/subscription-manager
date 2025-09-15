@@ -1,31 +1,37 @@
 import { useState, useEffect } from 'react';
+import { getSubscriptions, type Subscription } from './services/api';
+import { SubscriptionForm } from './components/SubscriptionForm';
+import { SubscriptionList } from './components/SubscriptionList';
 import './App.css';
 
+// Componente principal da aplicação
 function App() {
-  // 'useState' para armazenar a mensagem que vem do backend
-  const [message, setMessage] = useState('');
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
-  // 'useEffect' para executar a busca de dados quando o componente carregar
+  // Função para buscar as assinaturas e atualizar o estado
+  const fetchSubscriptions = async () => {
+    try {
+      const subs = await getSubscriptions();
+      setSubscriptions(subs);
+    } catch (error) {
+      console.error("Error fetching subscriptions:", error);
+    }
+  };
+
+  // useEffect para buscar os dados iniciais quando o componente montar
   useEffect(() => {
-    // A URL completa da API no backend
-    fetch('http://localhost:3001/api')
-      .then(response => response.json())
-      .then(data => {
-        // Atualiza o estado com a mensagem recebida
-        setMessage(data.message);
-      })
-      .catch(error => {
-        console.error("There was an error fetching the data:", error);
-        setMessage("Failed to connect to the server.");
-      });
-  }, []); // O array vazio [] garante que isso rode apenas uma vez
+    fetchSubscriptions();
+  }, []);
 
+  // Renderiza o formulário e a lista de assinaturas
   return (
     <>
       <h1>Subscription Manager</h1>
       <div className="card">
-        {/* Exibe a mensagem do estado. Começará vazia e será preenchida após a chamada da API */}
-        <p>{message || "Loading message from server..."}</p>
+        <SubscriptionForm onSubscriptionAdded={fetchSubscriptions} />
+      </div>
+      <div className="card">
+        <SubscriptionList subscriptions={subscriptions} />
       </div>
     </>
   );
