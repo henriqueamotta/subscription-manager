@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { deleteSubscription, getSubscriptions, updateSubscription, type Subscription } from './services/api';
+import { getSubscriptions, deleteSubscription, updateSubscription, type Subscription } from './services/api';
 import { SubscriptionForm } from './components/SubscriptionForm';
 import { SubscriptionList } from './components/SubscriptionList';
+import { EditModal } from './components/EditModal';
 import './App.css';
 
 // Componente principal da aplicação
 function App() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]); // Estado para armazenar a lista de assinaturas
+  const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null); // Estado para controlar a assinatura sendo editada
 
   // Função para buscar as assinaturas e atualizar o estado
   const fetchSubscriptions = async () => {
@@ -35,21 +37,13 @@ function App() {
   };
 
   // Função para atualizar uma assinatura
-  const handleUpdate = async (id: number) => {
-    const currentSub = subscriptions.find(sub => sub.id === id);
-    if (!currentSub) return;
-
-    // Simples prompt para editar o nome da assinatura
-    // Em uma aplicação real, usaríamos um modal ou um formulário dedicado
-    const newName = prompt("Enter new name:", currentSub.name);
-    if (newName && newName !== currentSub.name) {
-      try {
-        const updatedData = { ...currentSub, name: newName };
-        await updateSubscription(id, updatedData);
-        fetchSubscriptions();
-      } catch (error) {
-        console.error("Error updating subscription:", error);
-      }
+  const handleSaveEdit = async (updatedSub: Subscription) => {
+    try {
+      await updateSubscription(updatedSub.id, updatedSub);
+      setEditingSubscription(null); // Fecha o modal de edição
+      fetchSubscriptions(); // Recarrega a lista de assinaturas
+    } catch (error) {
+      console.error("Error updating subscription:", error);
     }
   };
 
@@ -64,9 +58,18 @@ function App() {
         <SubscriptionList
           subscriptions={subscriptions}
           onDelete={handleDelete}
-          onUpdate={handleUpdate}
+          onEdit={setEditingSubscription}
         />
       </div>
+
+      {/* Renderiza o modal de edição se houver uma assinatura sendo editada */}
+      {editingSubscription && (
+        <EditModal
+          subscription={editingSubscription}
+          onClose={() => setEditingSubscription(null)}
+          onSave={handleSaveEdit}
+        />
+      )}
     </>
   );
 }
