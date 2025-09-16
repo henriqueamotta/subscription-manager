@@ -35,3 +35,27 @@ export const createSubscription = async (subscription: NewSubscription): Promise
   }
   return response.json();
 };
+
+export const updateSubscription = async (id: number, subscriptionData: Partial<NewSubscription>): Promise<Subscription> => {
+  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(subscriptionData),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update subscription');
+  }
+  return response.json();
+};
+
+// Função para deletar uma assinatura
+export const deleteSubscription = async (id: number): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete subscription');
+  }
+};

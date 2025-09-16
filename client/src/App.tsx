@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSubscriptions, type Subscription } from './services/api';
+import { deleteSubscription, getSubscriptions, updateSubscription, type Subscription } from './services/api';
 import { SubscriptionForm } from './components/SubscriptionForm';
 import { SubscriptionList } from './components/SubscriptionList';
 import './App.css';
@@ -23,6 +23,36 @@ function App() {
     fetchSubscriptions();
   }, []);
 
+  // Função para deletar uma assinatura e atualizar a lista
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteSubscription(id);
+      // Remove a assinatura da lista na tela para uma resposta visual imediata
+      setSubscriptions(subscriptions.filter(sub => sub.id !== id));
+    } catch (error) {
+      console.error("Error deleting subscription:", error);
+    }
+  };
+
+  // Função para atualizar uma assinatura
+  const handleUpdate = async (id: number) => {
+    const currentSub = subscriptions.find(sub => sub.id === id);
+    if (!currentSub) return;
+
+    // Simples prompt para editar o nome da assinatura
+    // Em uma aplicação real, usaríamos um modal ou um formulário dedicado
+    const newName = prompt("Enter new name:", currentSub.name);
+    if (newName && newName !== currentSub.name) {
+      try {
+        const updatedData = { ...currentSub, name: newName };
+        await updateSubscription(id, updatedData);
+        fetchSubscriptions();
+      } catch (error) {
+        console.error("Error updating subscription:", error);
+      }
+    }
+  };
+
   // Renderiza o formulário e a lista de assinaturas
   return (
     <>
@@ -31,7 +61,11 @@ function App() {
         <SubscriptionForm onSubscriptionAdded={fetchSubscriptions} />
       </div>
       <div className="card">
-        <SubscriptionList subscriptions={subscriptions} />
+        <SubscriptionList
+          subscriptions={subscriptions}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+        />
       </div>
     </>
   );
