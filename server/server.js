@@ -38,6 +38,40 @@ app.post('/api/subscriptions', async (req, res) => {
   }
 });
 
+// Rota para atualizar uma assinatura existente
+app.put('/api/subscriptions/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Extrai o ID da assinatura dos parâmetros da rota
+    const { name, price, renewalDate } = req.body; // Extrai os dados do corpo da requisição
+    const updatedSubscription = await prisma.subscription.update({
+      where: { id: parseInt(id) }, // Encontra a assinatura pelo ID
+      data: { // Novos dados para atualizar
+        name,
+        price,
+        renewalDate: new Date(renewalDate),
+      },
+    });
+    res.json(updatedSubscription); // Retorna a assinatura atualizada como JSON
+  } catch (error) {
+    console.error("Error updating subscription:", error);
+    res.status(500).json({ error: "An error occurred while updating the subscription." });
+  }
+});
+
+// Rota para deletar uma assinatura
+app.delete('/api/subscriptions/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Extrai o ID da assinatura dos parâmetros da rota
+    await prisma.subscription.delete({
+      where: { id: parseInt(id) }, // Encontra a assinatura pelo ID
+    }); // Deleta a assinatura do banco de dados
+    res.status(204).end(); // Retorna status 204 (No Content)
+  } catch (error) {
+    console.error("Error deleting subscription:", error);
+    res.status(500).json({ error: "An error occurred while deleting the subscription." });
+  }
+});
+
 // Inicia o servidor na porta definida
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
