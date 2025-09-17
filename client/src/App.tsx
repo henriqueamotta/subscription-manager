@@ -62,8 +62,9 @@ function App() {
           onEdit={setEditingSubscription}
         />
       </div>
+
       {/* Resumo das assinaturas */}
-      <div className="card">
+      <div className="card dashboard-card">
         <Dashboard subscriptions={subscriptions} />
       </div>
 

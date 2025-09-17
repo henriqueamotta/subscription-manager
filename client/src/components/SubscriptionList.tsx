@@ -17,11 +17,22 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscription
         {subscriptions.map((sub) => {
           // Mapear e exibir cada assinatura
           return (
-            <li key={sub.id}>
-              <strong>{sub.name}</strong> - ${sub.price.toFixed(2)} - Renews on: {new Date(sub.renewalDate).toLocaleDateString()}
-              <button onClick={() => onEdit(sub)} style={{ marginLeft: '10px'}}>Edit</button> {/* Botão para editar a assinatura */}
-              <button onClick={() => onDelete(sub.id)}>Delete</button> {/* Botão para deletar a assinatura */}
-            </li>
+            <li key={sub.id} className="subscription-item">
+            <span className="subscription-name">{sub.name}</span>
+            <span className="subscription-price">
+              {sub.price.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              })}
+            </span>
+            <span className="subscription-date">
+              Renews on: {new Date(sub.renewalDate).toLocaleDateString()}
+            </span>
+            <div className="btn-group">
+              <button onClick={() => onEdit(sub)} className="btn-edit">Edit</button>
+              <button onClick={() => onDelete(sub.id)} className="btn-delete">Delete</button>
+            </div>
+          </li>
           );
         })}
       </ul>

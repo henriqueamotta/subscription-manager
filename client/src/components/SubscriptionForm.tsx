@@ -32,29 +32,45 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSubscripti
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Add new subscription</h3>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Name (e.g., Netflix)"
-        required
-      />
-      <input
-        type="number"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        placeholder="Price (e.g., 39.90)"
-        required
-      />
-      <input
-        type="date"
-        value={renewalDate}
-        onChange={(e) => setRenewalDate(e.target.value)}
-        required
-      />
-      <button type="submit">Add</button>
-    </form>
-  );
+  <form onSubmit={handleSubmit}>
+    <h3>Add new subscription</h3>
+    <div className="form-grid">
+      <div className="form-group">
+        <label htmlFor="name">Name</label>
+        <input
+          id="name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g., Netflix"
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="price">Price</label>
+        <input
+          id="price"
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="e.g., 39.90"
+          required
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="renewalDate">Renewal Date</label>
+        <input
+          id="renewalDate"
+          type="date"
+          value={renewalDate}
+          onChange={(e) => setRenewalDate(e.target.value)}
+          required
+        />
+      </div>
+      <div className="form-button-container">
+        <button type="submit" className="btn-add">Add</button>
+      </div>
+    </div>
+  </form>
+);
 };
