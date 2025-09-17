@@ -58,8 +58,8 @@ export const EditModal: React.FC<EditModalProps> = ({ subscription, onClose, onS
             onChange={handleChange}
           />
           <div className="modal-actions">
-            <button type="submit">Save</button>
-            <button type="button" onClick={onClose}>Cancel</button>
+            <button type="submit" className="btn-edit">Save</button>
+            <button type="button" onClick={onClose} className="btn-delete">Cancel</button>
           </div>
         </form>
       </div>
