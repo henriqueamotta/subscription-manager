@@ -3,6 +3,7 @@ import { getSubscriptions, deleteSubscription, updateSubscription, type Subscrip
 import { SubscriptionForm } from './components/SubscriptionForm';
 import { SubscriptionList } from './components/SubscriptionList';
 import { EditModal } from './components/EditModal';
+import { Dashboard } from './components/Dashboard';
 import './App.css';
 
 // Componente principal da aplicação
@@ -60,6 +61,10 @@ function App() {
           onDelete={handleDelete}
           onEdit={setEditingSubscription}
         />
+      </div>
+      {/* Resumo das assinaturas */}
+      <div className="card">
+        <Dashboard subscriptions={subscriptions} />
       </div>
 
       {/* Renderiza o modal de edição se houver uma assinatura sendo editada */}
