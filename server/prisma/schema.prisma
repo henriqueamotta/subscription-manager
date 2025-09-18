@@ -9,15 +9,28 @@ generator client {
   output   = "../generated/prisma"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Subscription {
+model Service {
   id            Int      @id @default(autoincrement())
-  name          String
-  price         Float
-  renewalDate   DateTime @map("renewal_date")
-  createdAt     DateTime @default(now()) @map("created_at")
+  name          String   @unique // Nome do serviço (ex: "Netflix")
+  logoUrl       String   @map("logo_url") // Caminho para o arquivo do logo
+  brandColor    String   @map("brand_color") // Cor da marca em hexadecimal
+  subscriptions Subscription[] // Relação: Um serviço pode ter várias assinaturas
+}
+
+model Subscription {
+  id          Int      @id @default(autoincrement())
+  price       Float
+  renewalDate DateTime @map("renewal_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  serviceId   Int      @map("service_id")
+  service     Service  @relation(fields: [serviceId], references: [id])
 }
