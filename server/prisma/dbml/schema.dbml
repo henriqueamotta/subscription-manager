@@ -1,0 +1,22 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Service {
+  id Int [pk, increment]
+  name String [unique, not null]
+  logoUrl String [not null]
+  brandColor String [not null]
+  subscriptions Subscription [not null]
+}
+
+Table Subscription {
+  id Int [pk, increment]
+  price Float [not null]
+  renewalDate DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  serviceId Int [not null]
+  service Service [not null]
+}
+
+Ref: Subscription.serviceId > Service.id

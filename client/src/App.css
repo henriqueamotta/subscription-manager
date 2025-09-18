@@ -77,8 +77,7 @@ ul {
 
 li {
   display: grid; /* Transformando o <li> em um container grid */
-  /* Definindo o template das colunas: */
-  /* A 1ª (nome) ocupa 2 partes do espaço, as 2 seguintes (preço, data) ocupam 1 parte cada, e a última (botões) tem tamanho automático */
+  /* Definindo o template das colunas: 2fr para o nome, 1fr para o preço e 1fr para a data de renovação */
   grid-template-columns: 2fr 1fr 1fr auto;
   align-items: center; /* Alinha os itens verticalmente ao centro */
   gap: 1.5rem; /* Espaço entre as colunas */
@@ -116,6 +115,7 @@ button:hover {
 li .btn-group {
   display: flex;
   gap: 0.5rem;
+  justify-self: end; /* Alinha o grupo de botões à direita */
 }
 
 .btn-edit {
@@ -183,4 +183,73 @@ li .btn-group {
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.subscription-logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  vertical-align: middle;
+}
+
+/* Estilização Customizada para o Select (Dropdown) */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+select {
+  /* Remove a aparência padrão do navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Garante que o select preencha o wrapper */
+  width: 100%;
+  cursor: pointer;
+
+  /* Re-aplica os estilos que queremos (iguais aos do input) */
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: #333;
+  color: var(--text-color);
+}
+
+/* Adiciona seta customizada */
+.select-wrapper::after {
+  content: '▼';
+  font-size: 0.8em;
+  color: var(--text-color);
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Garante que a seta não bloqueie o clique no select */
+}
+
+.chart-container {
+  margin-top: 2rem; /* Este é o espaço que você queria! */
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 50px; /* Espaço entre a legenda e o gráfico */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9em;
+}
+
+.legend-color-box {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
 }
