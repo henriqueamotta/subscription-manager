@@ -18,6 +18,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String // Armazenará a senha criptografada (hash)
+  createdAt     DateTime @default(now()) @map("created_at")
+  subscriptions Subscription[] // Relação: Um usuário pode ter várias assinaturas
+}
+
 model Service {
   id            Int      @id @default(autoincrement())
   name          String   @unique // Nome do serviço (ex: "Netflix")
@@ -33,4 +41,6 @@ model Subscription {
   createdAt   DateTime @default(now()) @map("created_at")
   serviceId   Int      @map("service_id")
   service     Service  @relation(fields: [serviceId], references: [id])
+  userId      Int      @map("user_id")
+  user        User     @relation(fields: [userId], references: [id])
 }

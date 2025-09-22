@@ -1,5 +1,14 @@
 const API_BASE_URL = 'http://localhost:3001/api'; // Base URL da API
 
+// Função para obter os headers de autenticação
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : '',
+  };
+};
+
 // Define as interfaces para tipar os dados
 export interface Service {
   id: number;
@@ -25,9 +34,11 @@ export type NewSubscriptionData = {
   renewalDate: string;
 }
 
-// Função para buscar todas as assinaturas
+// Função para buscar todos os serviços
 export const getServices = async (): Promise<Service[]> => {
-  const response = await fetch(`${API_BASE_URL}/services`);
+  const response = await fetch(`${API_BASE_URL}/services`, {
+    headers: getAuthHeaders(),
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch services');
   }
@@ -36,7 +47,9 @@ export const getServices = async (): Promise<Service[]> => {
 
 // Função para buscar todas as assinaturas
 export const getSubscriptions = async (): Promise<Subscription[]> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions`);
+  const response = await fetch(`${API_BASE_URL}/subscriptions`, {
+    headers: getAuthHeaders(),
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch subscriptions');
   }
@@ -47,7 +60,7 @@ export const getSubscriptions = async (): Promise<Subscription[]> => {
 export const createSubscription = async (subscriptionData: NewSubscriptionData): Promise<Subscription> => {
   const response = await fetch(`${API_BASE_URL}/subscriptions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders(),
     body: JSON.stringify(subscriptionData),
   });
   if (!response.ok) {
@@ -79,4 +92,41 @@ export const deleteSubscription = async (id: number): Promise<void> => {
   if (!response.ok) {
     throw new Error('Failed to delete subscription');
   }
+};
+
+// Define a interface AuthData para tipar os dados de autenticação
+export type AuthData = {
+  email: string;
+  password: string;
+};
+
+// Função para registrar um novo usuário
+export const registerUser = async (data: AuthData) => {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    // Tenta extrair a mensagem de erro do backend
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to register');
+  }
+  return response.json();
+};
+
+// Função para logar um usuário
+export const loginUser = async (data: AuthData) => {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to login');
+  }
+  return response.json(); // Retorna { token: "..." }
 };

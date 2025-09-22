@@ -2,6 +2,14 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
+Table User {
+  id Int [pk, increment]
+  email String [unique, not null]
+  password String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  subscriptions Subscription [not null]
+}
+
 Table Service {
   id Int [pk, increment]
   name String [unique, not null]
@@ -17,6 +25,10 @@ Table Subscription {
   createdAt DateTime [default: `now()`, not null]
   serviceId Int [not null]
   service Service [not null]
+  userId Int [not null]
+  user User [not null]
 }
 
 Ref: Subscription.serviceId > Service.id
+
+Ref: Subscription.userId > User.id
