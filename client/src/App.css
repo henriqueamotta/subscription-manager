@@ -1,4 +1,3 @@
-/* Layout Principal */
 .container {
   max-width: 800px; /* Largura máxima do conteúdo */
   margin: 0 auto; /* Centraliza na página */
@@ -208,7 +207,7 @@ select {
   width: 100%;
   cursor: pointer;
 
-  /* Re-aplica os estilos que queremos (iguais aos do input) */
+  /* Estilos do Select */
   padding: 0.6em 1.2em;
   font-size: 1em;
   border-radius: 8px;
@@ -230,12 +229,13 @@ select {
 }
 
 .chart-container {
-  margin-top: 2rem; /* Este é o espaço que você queria! */
+  margin-top: 2rem;
 }
 
 .chart-legend {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap; /* Permite que a legenda quebre em várias linhas se necessário */
   gap: 1.5rem;
   margin-bottom: 50px; /* Espaço entre a legenda e o gráfico */
 }
@@ -306,7 +306,6 @@ select {
   cursor: pointer;
   transition: background-color 0.25s; /* Transição mais suave */
 
-  /* Estilos que já tínhamos */
   width: 100%;
   margin-top: 0.5rem;
 
