@@ -1,12 +1,15 @@
 import { Outlet } from 'react-router-dom';
+import { Navbar } from './components/Navbar';
 import './App.css';
 
 function App() {
-  // Por enquanto, o App só renderiza a rota filha correspondente
   return (
-    <main>
-      <Outlet />
-    </main>
+    <>
+      <Navbar />
+      <main className="container">
+        <Outlet />
+      </main>
+    </>
   );
 }
 
