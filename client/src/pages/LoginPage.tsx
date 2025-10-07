@@ -16,7 +16,7 @@ export const LoginPage = () => {
     try {
       const data = await loginUser({ email, password });
       login(data.token); // Salva o token no contexto e no localStorage
-      navigate('/'); // Redireciona para o dashboard
+      navigate('/dashboard'); // Redireciona para o dashboard
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message);
