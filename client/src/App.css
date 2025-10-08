@@ -364,3 +364,14 @@ select {
   background-color: var(--primary-color);
   color: white;
 }
+
+/* Estilos para garantir que o rodapé fique no final da página */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main.container {
+  flex-grow: 1; /* Faz o conteúdo principal crescer e empurrar o rodapé para baixo */
+}
