@@ -1,18 +1,11 @@
-import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import './LandingPage.css';
 
 export const LandingPage = () => {
   const { token } = useAuth();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (token) {
-      navigate('/dashboard');
-    }
-  }, [token, navigate]);
-
+  // Redireciona para o dashboard se o usuário já estiver autenticado
   return (
     <div className="landing-container">
       {/* Seção Hero */}
@@ -20,8 +13,15 @@ export const LandingPage = () => {
         <h1>Take Control of Your Subscriptions.</h1>
         <p>Centralize your recurring expenses, visualize your costs in an interactive dashboard, and never miss a renewal date again.</p>
         <div className="cta-buttons">
-          <Link to="/register" className="btn-cta primary">Create Account for Free</Link>
-          <Link to="/login" className="btn-cta secondary">Already Have an Account</Link>
+          {/* Mostra botões diferentes se o usuário já estiver logado */}
+          {token ? (
+            <Link to="/dashboard" className="btn-cta primary">Access my Dashboard</Link>
+          ) : (
+            <>
+              <Link to="/register" className="btn-cta primary">Create Account for Free</Link>
+              <Link to="/login" className="btn-cta secondary">Already Have an Account?</Link>
+            </>
+          )}
         </div>
         <img src="/dashboard-mockup.png" alt="Dashboard do Subscription Manager" className="hero-image" />
       </header>
@@ -52,8 +52,12 @@ export const LandingPage = () => {
 
       {/* Seção Final de CTA */}
       <section className="final-cta">
-        <h2>Ready to Take Control of Your Finances?</h2>
-        <Link to="/register" className="btn-cta primary">Get Started Now</Link>
+        <h2>{token ? 'Continue where you left off' : 'Ready to organize your finances?'}</h2>
+        {token ? (
+          <Link to="/dashboard" className="btn-cta primary">Access My Dashboard</Link>
+        ) : (
+          <Link to="/register" className="btn-cta primary">Get Started</Link>
+        )}
       </section>
     </div>
   );
