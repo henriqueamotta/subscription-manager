@@ -24,9 +24,20 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscription
               />
               {sub.service.name}
             </span>
+
+            <span className="subscription-price">
+              {sub.price.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              })}
+            </span>
+
+            <span className="subscription-category">{sub.service.category.name}</span>
+
             <span className="subscription-date">
               Renews on: {new Date(sub.renewalDate).toLocaleDateString()}
             </span>
+
             <div className="btn-group">
               <button onClick={() => onEdit(sub)} className="btn-edit">Edit</button>
               <button onClick={() => onDelete(sub.id)} className="btn-delete">Delete</button>

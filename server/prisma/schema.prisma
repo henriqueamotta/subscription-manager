@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -19,28 +13,36 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  password      String // Armazenará a senha criptografada (hash)
-  createdAt     DateTime @default(now()) @map("created_at")
-  subscriptions Subscription[] // Relação: Um usuário pode ter várias assinaturas
+  id              Int                 @id @default(autoincrement())
+  email           String              @unique
+  password        String              // Armazenará a senha criptografada (hash)
+  createdAt       DateTime            @default(now()) @map("created_at")
+  subscriptions   Subscription[]      // Relação: Um usuário pode ter várias assinaturas
+}
+
+model Category {
+  id              Int                 @id @default(autoincrement())
+  name            String              @unique
+  services        Service[]           // Relação: Uma categoria pode ter vários serviços
 }
 
 model Service {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique // Nome do serviço (ex: "Netflix")
-  logoUrl       String   @map("logo_url") // Caminho para o arquivo do logo
-  brandColor    String   @map("brand_color") // Cor da marca em hexadecimal
-  subscriptions Subscription[] // Relação: Um serviço pode ter várias assinaturas
+  id              Int                 @id @default(autoincrement())
+  name            String              @unique // Nome do serviço (ex: "Netflix")
+  logoUrl         String              @map("logo_url") // Caminho para o arquivo do logo
+  brandColor      String              @map("brand_color") // Cor da marca em hexadecimal
+  subscriptions   Subscription[]      // Relação: Um serviço pode ter várias assinaturas
+  categoryId      Int                 @map("category_id")
+  category        Category            @relation(fields: [categoryId], references: [id])
 }
 
 model Subscription {
-  id          Int      @id @default(autoincrement())
-  price       Float
-  renewalDate DateTime @map("renewal_date")
-  createdAt   DateTime @default(now()) @map("created_at")
-  serviceId   Int      @map("service_id")
-  service     Service  @relation(fields: [serviceId], references: [id])
-  userId      Int      @map("user_id")
-  user        User     @relation(fields: [userId], references: [id])
+  id              Int                 @id @default(autoincrement())
+  price           Float
+  renewalDate     DateTime            @map("renewal_date")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  serviceId       Int                 @map("service_id")
+  service         Service             @relation(fields: [serviceId], references: [id])
+  userId          Int                 @map("user_id")
+  user            User                @relation(fields: [userId], references: [id])
 }

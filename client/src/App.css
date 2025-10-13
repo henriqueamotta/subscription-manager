@@ -75,8 +75,7 @@ ul {
 
 li {
   display: grid; /* Transformando o <li> em um container grid */
-  /* Definindo o template das colunas: 2fr para o nome, 1fr para o preço e 1fr para a data de renovação */
-  grid-template-columns: 2fr 1fr 1fr auto;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
   align-items: center; /* Alinha os itens verticalmente ao centro */
   gap: 1.5rem; /* Espaço entre as colunas */
   padding: 1rem;

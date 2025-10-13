@@ -10,12 +10,20 @@ Table User {
   subscriptions Subscription [not null]
 }
 
+Table Category {
+  id Int [pk, increment]
+  name String [unique, not null]
+  services Service [not null]
+}
+
 Table Service {
   id Int [pk, increment]
   name String [unique, not null]
   logoUrl String [not null]
   brandColor String [not null]
   subscriptions Subscription [not null]
+  categoryId Int [not null]
+  category Category [not null]
 }
 
 Table Subscription {
@@ -28,6 +36,8 @@ Table Subscription {
   userId Int [not null]
   user User [not null]
 }
+
+Ref: Service.categoryId > Category.id
 
 Ref: Subscription.serviceId > Service.id
 

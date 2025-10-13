@@ -9,11 +9,15 @@ router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   try {
-    const services = await prisma.service.findMany();
+    const services = await prisma.service.findMany({
+      orderBy: {
+        name: 'asc', // 'asc' para ordem ascendente (A-Z)
+      },
+    });
     res.json(services);
   } catch (error) {
     console.error("Error fetching services:", error);
-    res.status(500).json({ error: "An error occurred while fetching services." });
+    res.status(500).json({ error: "Could not fetch services." });
   }
 });
 
