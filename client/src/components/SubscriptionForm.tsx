@@ -33,9 +33,9 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSubscripti
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const subscriptionData: NewSubscriptionData = {
-      serviceId: parseInt(selectedServiceId),
-      price: parseFloat(price),
-      renewalDate: new Date(renewalDate).toISOString(),
+      serviceId: selectedServiceId,
+      price: price,
+      renewalDate: renewalDate,
     };
 
     try {
@@ -54,7 +54,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ onSubscripti
       <div className="form-grid">
         <div className="form-group">
           <label htmlFor="service">Service</label>
-          <div className="select-wrapper"> {/* Adicionamos este wrapper */}
+          <div className="select-wrapper">
             <select
               id="service"
               value={selectedServiceId}

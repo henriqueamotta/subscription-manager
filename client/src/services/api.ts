@@ -1,6 +1,6 @@
-const API_BASE_URL = 'http://localhost:3001/api'; // Base URL da API
+const API_BASE_URL = 'http://localhost:3001/api';
 
-// Função para obter os headers de autenticação
+// Função para obter os headers com o token de autenticação
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return {
@@ -9,12 +9,20 @@ const getAuthHeaders = () => {
   };
 };
 
-// Define as interfaces para tipar os dados
+// Define a interface Category para tipar os dados das categorias
+export interface Category {
+  id: number;
+  name: string;
+}
+
+// Define as interfaces para tipos de dados
 export interface Service {
   id: number;
   name: string;
   logoUrl: string;
   brandColor: string;
+  categoryId: number;
+  category: Category; // Relação aninhada com a categoria
 }
 
 // Define a interface Subscription para tipar os dados das assinaturas
@@ -22,83 +30,18 @@ export interface Subscription {
   id: number;
   price: number;
   renewalDate: string;
-  createdAt: string;
-  serviceId: number;
-  service: Service; // Relação aninhada
+  service: Service; // Relação aninhada com o serviço
 }
 
 // Define a interface NewSubscription para criar novas assinaturas
 export type NewSubscriptionData = {
-  serviceId: number;
-  price: number;
+  serviceId: string;
+  price: string;
   renewalDate: string;
-}
-
-// Função para buscar todos os serviços
-export const getServices = async (): Promise<Service[]> => {
-  const response = await fetch(`${API_BASE_URL}/services`, {
-    headers: getAuthHeaders(),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to fetch services');
-  }
-  return response.json();
-};
-
-// Função para buscar todas as assinaturas
-export const getSubscriptions = async (): Promise<Subscription[]> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions`, {
-    headers: getAuthHeaders(),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to fetch subscriptions');
-  }
-  return response.json();
-};
-
-// Função para criar uma nova assinatura
-export const createSubscription = async (subscriptionData: NewSubscriptionData): Promise<Subscription> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(subscriptionData),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to create subscription');
-  }
-  return response.json();
-};
-
-// Função para atualizar uma assinatura existente
-export const updateSubscription = async (id: number, subscriptionData: Partial<NewSubscriptionData>): Promise<Subscription> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(subscriptionData),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update subscription');
-  }
-  return response.json();
-};
-
-// Função para deletar uma assinatura
-export const deleteSubscription = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete subscription');
-  }
 };
 
 // Define a interface AuthData para tipar os dados de autenticação
-export type AuthData = {
-  email: string;
-  password: string;
-};
+export type AuthData = { email: string; password: string; };
 
 // Função para registrar um novo usuário
 export const registerUser = async (data: AuthData) => {
@@ -129,4 +72,54 @@ export const loginUser = async (data: AuthData) => {
     throw new Error(errorData.error || 'Failed to login');
   }
   return response.json(); // Retorna { token: "..." }
+};
+
+// Funções para interagir com a API de serviços e assinaturas
+export const getServices = async (): Promise<Service[]> => {
+  const response = await fetch(`${API_BASE_URL}/services`, { headers: getAuthHeaders() });
+  if (!response.ok) throw new Error('Failed to fetch services');
+  return response.json();
+};
+
+// Função para buscar assinaturas
+export const getSubscriptions = async (): Promise<Subscription[]> => {
+  const response = await fetch(`${API_BASE_URL}/subscriptions`, { headers: getAuthHeaders() });
+  if (!response.ok) throw new Error('Failed to fetch subscriptions');
+  return response.json();
+};
+
+// Função para criar uma nova assinatura
+export const createSubscription = async (subscriptionData: NewSubscriptionData): Promise<Subscription> => {
+  const response = await fetch(`${API_BASE_URL}/subscriptions`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(subscriptionData),
+  });
+  if (!response.ok) throw new Error('Failed to create subscription');
+  return response.json();
+};
+
+// Função para atualizar uma assinatura existente
+export const updateSubscription = async (id: number, subscriptionData: Partial<NewSubscriptionData>): Promise<Subscription> => {
+  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(subscriptionData),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update subscription');
+  }
+  return response.json();
+};
+
+// Função para deletar uma assinatura
+export const deleteSubscription = async (id: number): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete subscription');
+  }
 };
