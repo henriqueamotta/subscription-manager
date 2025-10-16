@@ -69,4 +69,56 @@ describe('Rotas de Autenticação / Authentication Routes', () => {
     // --- FIM DO TESTE DE DUPLICAÇÃO DE EMAIL ---
   });
 
+  // --- BLOCO DE TESTES DE LOGIN ---
+  describe('POST /api/auth/login', () => {
+
+    it('deve logar um usuário existente com sucesso e retornar um token / should log in an existing user and return a token', async () => {
+      // Usamos o usuário criado no primeiro teste de registro
+      const credentials = {
+        email: 'testuser@example.com',
+        password: 'password123',
+      };
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send(credentials);
+
+      // Verifica a resposta da API
+      expect(response.statusCode).toBe(200); // 200 OK
+      expect(response.body).toHaveProperty('token'); // A resposta DEVE conter um token
+      expect(typeof response.body.token).toBe('string'); // O token deve ser uma string
+    });
+
+    it('deve falhar ao tentar logar com uma senha incorreta / should fail to log in with an incorrect password', async () => {
+      const credentials = {
+        email: 'testuser@example.com',
+        password: 'wrongpassword', // Senha errada
+      };
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send(credentials);
+
+      // Verifica se a API respondeu com o erro correto
+      expect(response.statusCode).toBe(401); // 401 Unauthorized
+      expect(response.body.error).toBe("Invalid credentials.");
+    });
+
+    it('deve falhar ao tentar logar com um email que não existe / should fail to log in with a non-existent email', async () => {
+      const credentials = {
+        email: 'nouser@example.com', // Email que não existe
+        password: 'password123',
+      };
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send(credentials);
+
+      // Verifica se a API respondeu com o erro correto
+      expect(response.statusCode).toBe(401); // 401 Unauthorized
+      expect(response.body.error).toBe("Invalid credentials.");
+    });
+  });
+  // --- FIM DOS TESTES DE LOGIN ---
+
 });
