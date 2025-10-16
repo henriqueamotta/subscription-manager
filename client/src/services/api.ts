@@ -33,15 +33,18 @@ export interface Subscription {
   service: Service; // Relação aninhada com o serviço
 }
 
+// Define a interface AuthData para tipar os dados de autenticação
+export type AuthData = {
+  email: string;
+  password: string;
+};
+
 // Define a interface NewSubscription para criar novas assinaturas
 export type NewSubscriptionData = {
   serviceId: string;
   price: string;
   renewalDate: string;
 };
-
-// Define a interface AuthData para tipar os dados de autenticação
-export type AuthData = { email: string; password: string; };
 
 // Função para registrar um novo usuário
 export const registerUser = async (data: AuthData) => {
@@ -90,10 +93,18 @@ export const getSubscriptions = async (): Promise<Subscription[]> => {
 
 // Função para criar uma nova assinatura
 export const createSubscription = async (subscriptionData: NewSubscriptionData): Promise<Subscription> => {
+  // Converte os dados para os tipos esperados pela API
+  const dataToSend = {
+    serviceId: parseInt(subscriptionData.serviceId, 10),
+    price: parseFloat(subscriptionData.price),
+    renewalDate: new Date(subscriptionData.renewalDate).toISOString(),
+  };
+
+  // Validação simples dos dados antes de enviar
   const response = await fetch(`${API_BASE_URL}/subscriptions`, {
     method: 'POST',
     headers: getAuthHeaders(),
-    body: JSON.stringify(subscriptionData),
+    body: JSON.stringify(dataToSend),
   });
   if (!response.ok) throw new Error('Failed to create subscription');
   return response.json();

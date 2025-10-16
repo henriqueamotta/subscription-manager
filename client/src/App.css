@@ -55,6 +55,7 @@ form input {
   color: var(--text-color);
   width: 100%; /* Faz o input ocupar todo o espaço do container */
   box-sizing: border-box; /* Garante que padding não afete a largura total */
+  height: 38px;
 }
 
 form button.btn-add {
