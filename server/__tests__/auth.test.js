@@ -4,7 +4,7 @@ const { PrismaClient } = require('../generated/prisma');
 
 const prisma = new PrismaClient();
 
-// Descreve o conjunto de testes para as rotas de autenticação
+// Descreve o conjunto de testes para as rotas de autenticação / Authentication Routes
 describe('Rotas de Autenticação / Authentication Routes', () => {
 
   // Antes de todos os testes neste arquivo, limpa as tabelas na ordem correta
@@ -49,7 +49,24 @@ describe('Rotas de Autenticação / Authentication Routes', () => {
       expect(userInDb.password).not.toBe(newUser.password);
     });
 
-    // (Aqui adicionaremos os próximos testes...)
+    // --- TESTE DE DUPLICAÇÃO DE EMAIL ---
+    it('deve falhar ao registrar um usuário com um email que já existe / should fail to register a user with an existing email', async () => {
+      // Primeiro, garantimos que um usuário com este email já foi criado no teste anterior.
+      // Agora, tentamos registrar novamente com o mesmo email.
+      const duplicateUser = {
+        email: 'testuser@example.com',
+        password: 'anotherpassword',
+      };
+
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send(duplicateUser);
+
+      // Verifica se a API respondeu com o erro correto
+      expect(response.statusCode).toBe(400); // 400 Bad Request
+      expect(response.body.error).toBe("User with this email already exists.");
+    });
+    // --- FIM DO TESTE DE DUPLICAÇÃO DE EMAIL ---
   });
 
 });
