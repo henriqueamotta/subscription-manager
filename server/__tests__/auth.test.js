@@ -1,0 +1,124 @@
+const request = require('supertest');
+const app = require('../app');
+const { PrismaClient } = require('../generated/prisma');
+
+const prisma = new PrismaClient();
+
+// Descreve o conjunto de testes para as rotas de autenticação / Authentication Routes
+describe('Rotas de Autenticação / Authentication Routes', () => {
+
+  // Antes de todos os testes neste arquivo, limpa as tabelas na ordem correta
+  beforeAll(async () => {
+    await prisma.subscription.deleteMany({});
+    await prisma.user.deleteMany({});
+  });
+
+  // Depois de todos os testes, desconecta do banco de dados
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
+  // --- TESTES DE REGISTRO ---
+  describe('POST /api/auth/register', () => {
+
+    it('deve registrar um novo usuário com sucesso / should register a new user successfully', async () => {
+      const newUser = {
+        email: 'testuser@example.com',
+        password: 'password123',
+      };
+
+      // Faz a requisição para a API
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send(newUser);
+
+      // 1. Verifica a resposta da API
+      expect(response.statusCode).toBe(201); // 201 Created
+      expect(response.body).toHaveProperty('id');
+      expect(response.body.email).toBe(newUser.email);
+      expect(response.body).not.toHaveProperty('password'); // Garante que a senha não é retornada
+
+      // 2. Verifica se o usuário foi realmente salvo no banco de dados
+      const userInDb = await prisma.user.findUnique({
+        where: { email: newUser.email },
+      });
+      expect(userInDb).not.toBeNull();
+      expect(userInDb.email).toBe(newUser.email);
+
+      // 3. Garante que a senha salva no banco foi criptografada
+      expect(userInDb.password).not.toBe(newUser.password);
+    });
+
+    // --- TESTE DE DUPLICAÇÃO DE EMAIL ---
+    it('deve falhar ao registrar um usuário com um email que já existe / should fail to register a user with an existing email', async () => {
+      // Primeiro, garantimos que um usuário com este email já foi criado no teste anterior.
+      // Agora, tentamos registrar novamente com o mesmo email.
+      const duplicateUser = {
+        email: 'testuser@example.com',
+        password: 'anotherpassword',
+      };
+
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send(duplicateUser);
+
+      // Verifica se a API respondeu com o erro correto
+      expect(response.statusCode).toBe(400); // 400 Bad Request
+      expect(response.body.error).toBe("User with this email already exists.");
+    });
+    // --- FIM DO TESTE DE DUPLICAÇÃO DE EMAIL ---
+  });
+
+  // --- BLOCO DE TESTES DE LOGIN ---
+  describe('POST /api/auth/login', () => {
+
+    it('deve logar um usuário existente com sucesso e retornar um token / should log in an existing user and return a token', async () => {
+      // Usamos o usuário criado no primeiro teste de registro
+      const credentials = {
+        email: 'testuser@example.com',
+        password: 'password123',
+      };
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send(credentials);
+
+      // Verifica a resposta da API
+      expect(response.statusCode).toBe(200); // 200 OK
+      expect(response.body).toHaveProperty('token'); // A resposta DEVE conter um token
+      expect(typeof response.body.token).toBe('string'); // O token deve ser uma string
+    });
+
+    it('deve falhar ao tentar logar com uma senha incorreta / should fail to log in with an incorrect password', async () => {
+      const credentials = {
+        email: 'testuser@example.com',
+        password: 'wrongpassword', // Senha errada
+      };
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send(credentials);
+
+      // Verifica se a API respondeu com o erro correto
+      expect(response.statusCode).toBe(401); // 401 Unauthorized
+      expect(response.body.error).toBe("Invalid credentials.");
+    });
+
+    it('deve falhar ao tentar logar com um email que não existe / should fail to log in with a non-existent email', async () => {
+      const credentials = {
+        email: 'nouser@example.com', // Email que não existe
+        password: 'password123',
+      };
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send(credentials);
+
+      // Verifica se a API respondeu com o erro correto
+      expect(response.statusCode).toBe(401); // 401 Unauthorized
+      expect(response.body.error).toBe("Invalid credentials.");
+    });
+  });
+  // --- FIM DOS TESTES DE LOGIN ---
+
+});
