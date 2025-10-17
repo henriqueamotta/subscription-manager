@@ -124,4 +124,34 @@ describe('Rotas de Assinaturas / Subscription Routes', () => {
     expect(response.body).toBeInstanceOf(Array);
     expect(response.body.length).toBe(0);
   });
+
+  // --- TESTE DE EXCLUSÃO (DELETE) ---
+  it('deve excluir uma assinatura pertencente ao usuário / should delete a subscription belonging to the user', async () => {
+    // 1. Primeiro, é criada uma nova assinatura especificamente para este teste
+    const subscriptionToDelete = {
+      serviceId: serviceId.toString(),
+      price: "9.99",
+      renewalDate: "2025-12-01",
+    };
+    const createResponse = await request(app)
+      .post('/api/subscriptions')
+      .set('Authorization', `Bearer ${token}`)
+      .send(subscriptionToDelete);
+
+    const subscriptionId = createResponse.body.id; // O ID é guardado para exclusão
+
+    // 2. Agora, é tentada a exclusão da assinatura criada
+    const deleteResponse = await request(app)
+      .delete(`/api/subscriptions/${subscriptionId}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    // 3. Verifica-se se a resposta da exclusão foi bem-sucedida
+    expect(deleteResponse.statusCode).toBe(204); // Espera-se '204 No Content' para sucesso na exclusão
+
+    // 4. Banco de dados é verificado para garantir que a assinatura foi realmente excluída
+    const deletedSubInDb = await prisma.subscription.findUnique({
+      where: { id: subscriptionId },
+    });
+    expect(deletedSubInDb).toBeNull(); // Espera-se não encontrar nada
+  });
 });
