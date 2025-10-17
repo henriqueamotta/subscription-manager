@@ -98,4 +98,30 @@ describe('Rotas de Assinaturas / Subscription Routes', () => {
     expect(response.body[0].price).toBe(29.99);
   });
 
+  // --- TESTE DE SEGURANÇA ENTRE USUÁRIOS ---
+  it('não deve listar assinaturas de outros usuários / should not list subscriptions from other users', async () => {
+    // 1. Cria um segundo usuário (Usuário B)
+    await request(app)
+      .post('/api/auth/register')
+      .send({ email: 'otheruser@example.com', password: 'password456' });
+
+    // 2. Faz login como Usuário B para obter um token separado
+    const loginResponse = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'otheruser@example.com', password: 'password456' });
+
+    const otherUserToken = loginResponse.body.token;
+
+    // 3. Busca assinaturas usando o token do Usuário B
+    const response = await request(app)
+      .get('/api/subscriptions')
+      .set('Authorization', `Bearer ${otherUserToken}`);
+
+    // 4. VERIFICAÇÃO CRUCIAL:
+    // A resposta deve ser 200 OK, mas a lista de assinaturas deve estar vazia,
+    // pois a assinatura que existe pertence ao primeiro usuário (criado no beforeAll).
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBe(0);
+  });
 });
